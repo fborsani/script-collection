@@ -7,17 +7,12 @@ facility="6"
 logs_folder="/var/log/remote-hosts"
 
 #----LOGROTATE----
-copies=10    	#keep the last n backups
+copies=10    	  #keep the last n backups
 max_size="20M"  #create a backup after the file reaches this size (can use K,M,G as size units)
 freq="h"        #h -> hourly d -> daily w -> weekly m -> monthly
 
-function error(){
-    echo "[-] ERROR: $1"
-    exit 1
-}
-
 if [ $EUID -ne 0 ]; then
-    error "This script must be executed with elevated privileges"
+    echo "[-] This script must be executed with elevated privileges"
 fi
 
 apt update && apt install rsyslog auditd
@@ -63,7 +58,6 @@ esac
 
 mv "$cron_logrotate_position" "$cron_dest" > /dev/null
   
-
 systemctl start syslog.socket rsyslog.service logrotate
 systemctl restart cron
 
