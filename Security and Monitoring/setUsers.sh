@@ -79,6 +79,10 @@ if [ ! -f "$file_path" ]; then
     echo "Example row: USERNAME${entry_delimiter}PKEY${entry_delimiter}<admin|docker|limited>"
 fi
 
+if [ $EUID -ne 0 ]; then
+    echo "[-] This script must be executed with elevated privileges"
+fi
+
 create_users
 
 
