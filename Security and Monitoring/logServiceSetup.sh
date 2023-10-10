@@ -1,3 +1,5 @@
+#!/bin/bash
+
 auditd_conf_file="50-ansible"
 rsyslog_conf_file="40-ansible"
 

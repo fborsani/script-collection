@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if [[ $UID != 0 ]]; then
 	echo "root privileges required. Insert password..."
 	sudo "$0" "$@"

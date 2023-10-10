@@ -1,7 +1,9 @@
+#!/bin/bash
+
 file_path=$2
 entry_delimiter=":"
 managed_group="managed"
-
+default_shell="/bin/bash"
 
 function install_pubkey(){
   local user="$1"
@@ -18,7 +20,6 @@ function install_pubkey(){
   fi
 }
 
-
 function config_users():
     echo "[*] Cleaning up users"
     current_ansible_users=$(grep ^ansible: /etc/group | awk '{split($a0,out,":"); print out[4]}')
@@ -28,7 +29,7 @@ function config_users():
     if [[ "$user" != "$ansible_user" && "$user" != "$(whoami)" ]]; 
     then
         userdel "$user"
-        rm -rf "${ansible_users_key_storage:?}/${user:?}"
+        rm -rf "/home/${user:?}"
         echo "[+] Removed user $user"
     fi
     done
@@ -68,19 +69,19 @@ function config_users():
     echo "[+] All users created"
 }
 
+if [ $EUID -ne 0 ]; then
+    echo "[-] This script must be executed with elevated privileges"
+fi
+
 if [ ! -f "$file_path" ]; then
     echo "configure users. Requires a file with usernames, public keys and permissions separated by a ${entry_delimiter}."
+    echo "Example row: USERNAME${entry_delimiter}PKEY${entry_delimiter}<admin|docker|limited>"
     echo "All users are assigned to the group $managed_group. All users missing from the file excluding the one running the script"
     echo "and users not part of the group $managed_group will be removed."
     echo "The allowed permissions are:"
     echo "  -admin: full access and sudo privileges"
     echo "  -docker: can execute docker commands (i.e. create an image, run a new container or log into the container"
     echo "  -limited: default user permissions"
-    echo "Example row: USERNAME${entry_delimiter}PKEY${entry_delimiter}<admin|docker|limited>"
-fi
-
-if [ $EUID -ne 0 ]; then
-    echo "[-] This script must be executed with elevated privileges"
 fi
 
 create_users
