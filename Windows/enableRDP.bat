@@ -1,17 +1,19 @@
 @echo OFF
 for /f "tokens=3 delims= " %%i in ('reg query "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections') do (
     if %ERRORLEVEL% equ 0 (
-		echo Missing key
-		set doWork=1
+	    echo Missing key
+	    set doWork=1
 	)
+    else(
 	if "%%i" equ "0x1" (
-        echo RDP is active
-		set doWork=0
-    ) else (
-        echo RDP not active
-		set doWork=1
-    )
-)
+            echo RDP is active
+            set doWork=0
+        ) 
+        else (
+            echo RDP not active
+	    set doWork=1
+       )
+  )
 
 if %doWork% equ 1(
 	echo enabling RDP
